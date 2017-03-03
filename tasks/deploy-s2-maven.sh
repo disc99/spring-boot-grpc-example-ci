@@ -1,4 +1,4 @@
 #!/bin/bash                                                                                                                                                                                                
 echo "--"
-echo $1
+printenv
 echo "--"
