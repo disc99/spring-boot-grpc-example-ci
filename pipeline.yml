@@ -1,0 +1,21 @@
+---
+resources:
+- name: repo-ci
+  type: git
+  source:
+    uri: https://github.com/disc99/spring-boot-grpc-example-ci.git
+- name: repo-proto
+  type: git
+  source:
+    uri: https://github.com/disc99/spring-boot-grpc-example-proto.git
+
+jobs:
+  - name: deploy-to-s2
+    plan:
+      - aggregate:
+        - get: repo
+          resource: repo-proto
+          trigger: true
+        - get: repo-ci
+      - task: deploy
+        file: repo-ci/tasks/deploy-s2-maven.yml
