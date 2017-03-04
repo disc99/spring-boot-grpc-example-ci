@@ -1,21 +1,31 @@
 ---
 resources:
-- name: repo-ci
-  type: git
-  source:
-    uri: https://github.com/disc99/spring-boot-grpc-example-ci.git
+# - name: repo-ci
+#   type: git
+#   source:
+#     uri: https://github.com/disc99/spring-boot-grpc-example-ci.git
 - name: repo-proto
   type: git
   source:
     uri: https://github.com/disc99/spring-boot-grpc-example-proto.git
 
 jobs:
-  - name: deploy-to-s2
-    plan:
-      - aggregate:
-        - get: repo
-          resource: repo-proto
-          trigger: true
-        - get: repo-ci
-      - task: deploy
-        file: repo-ci/tasks/deploy-s2-maven.yml
+- name: deploy-s2
+  plan:
+  - get: repo-proto
+    trigger: true
+  - task: deploy
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: kiawin/grpc-java}
+      inputs:
+        - name: repo-proto
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          cd ./repo-proto/java/
+          ./gradlew generateProto build
